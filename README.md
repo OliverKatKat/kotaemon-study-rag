@@ -10,12 +10,12 @@
 
 ## 模型配置
 
-| 用途 | 当前配置 |
-|---|---|
-| LLM | DeepSeek Flash，模型 ID `deepseek-flash`，使用 DeepSeek 官方 API |
-| Embedding | 阿里云百炼 `text-embedding-v4`，**2048 维**，每个同步请求最多 10 条 |
+启动应用后进入 **Resources**。选择对应的供应商，在 **Specification** 中填写下表参数和自己的 `api_key`，勾选 **Set default** 后添加。
 
-组员启动后，在应用的模型管理中填入自己的 API Key。百炼使用工作空间提供的 OpenAI 兼容地址。
+| 模型 | 应用路径与供应商 | Specification 参数 |
+|---|---|---|
+| LLM（DeepSeek Flash） | **Resources → LLMs → Add**，选 `ChatOpenAI` | `model: deepseek-flash`，`base_url: https://api.deepseek.com` |
+| Embedding（阿里云百炼） | **Resources → Embeddings → Add**，选 `OpenAIEmbeddings` | `model: text-embedding-v4`，`dimensions: 2048`，`base_url` 填百炼工作空间提供的 OpenAI 兼容地址 |
 
 ## 入库验收
 
@@ -23,14 +23,12 @@
 
 | 样本 | 已验证的内容 | 正文／表格块与向量 |
 |---|---|---:|
-| UW《Hash Tables II》PDF | 第 25 页槽位与数值对应，第 26–28 页的分式、上标和因式 | 37 块、37 向量 |
-| UW《Hash Tables II》PPTX | 37 张幻灯片，保留第 26–28 张的原生公式和证明文字 | 37 块、37 向量 |
-| UTS Word 指南 | 截图中的 `No Spacing` 位于 `Headings` 章节 | 14 块、14 向量 |
-| 上海理工大学教学大纲 | 7 张原生表格保留行列，合并单元格文字只保留一次 | 15 块、15 向量 |
-| UTS PowerPoint 指南 | 第 4 张 `Smart Lookup`、第 17 张 `Banded Columns` | 25 块、25 向量 |
-| 中科大 ClassIn PDF | 第 8 页正文和截图中的「试卷资源」「授权资源」 | 17 块、17 向量 |
-
-UW PDF 强制重建后，旧的 74 条向量已清除，新库保留 37 条正文向量和 37 张可关联的页面预览。[复测明细](test-materials/ingestion-results.json) · [六份资料的测试问题与预期答案](test-materials/search-cases.md)
+| [UW《Hash Tables II》PDF](https://courses.cs.washington.edu/courses/cse332/25sp/lecture/11-hash2.pdf) | 第 25 页槽位与数值对应，第 26–28 页的分式、上标和因式 | 37 块、37 向量 |
+| [UW《Hash Tables II》PPTX](https://courses.cs.washington.edu/courses/cse332/25sp/lecture/11-hash2.pptx) | 37 张幻灯片，保留第 26–28 张的原生公式和证明文字 | 37 块、37 向量 |
+| [UTS Word 指南 DOCX](https://wordpress-futures-prod.s3.ap-southeast-2.amazonaws.com/wp-content/uploads/2022/04/22132448/Microsoft-Word-document-example.docx) | 截图中的 `No Spacing` 位于 `Headings` 章节 | 14 块、14 向量 |
+| [上海理工大学教学大纲 DOCX](https://oece.usst.edu.cn/_upload/article/files/63/b4/c131eafb4db2979754f132dbd3c1/5264fb92-3254-41d2-b973-8f191782d8c5.docx) | 7 张原生表格保留行列，合并单元格文字只保留一次 | 15 块、15 向量 |
+| [UTS PowerPoint 指南 PPTX](https://wordpress-futures-prod.s3.ap-southeast-2.amazonaws.com/wp-content/uploads/2022/07/13093627/Accessible-content-practices-PPT-example-edited.pptx) | 第 4 张 `Smart Lookup`、第 17 张 `Banded Columns` | 25 块、25 向量 |
+| [中科大 ClassIn PDF](https://www.teach.ustc.edu.cn/wp-content/uploads/2022/10/%E7%BA%BF%E4%B8%8A%E6%95%99%E5%AD%A6%E6%93%8D%E4%BD%9C%E8%AF%B4%E6%98%8E2022%E7%A7%8B-%E6%95%99%E5%B8%88%E7%80%9A%E6%B5%B7%E6%95%99%E5%AD%A6%E7%BD%91ClassIn.pdf) | 第 8 页正文和截图中的「试卷资源」「授权资源」 | 17 块、17 向量 |
 
 ## 小组复测
 
@@ -42,6 +40,8 @@ uv run --no-sync python app.py
 ```
 
 [自制测试文件 ZIP](test-materials/synthetic-samples.zip) 可直接下载。六份真实样本由原站下载，运行 `python test-materials/download_samples.py` 后，在 `downloads/real-samples/` 获得原稿，在 `downloads/real-samples.zip` 获得打包文件。
+
+[复测明细](test-materials/ingestion-results.json) · [六份资料的测试问题与预期答案](test-materials/search-cases.md)
 
 ## 检索与问答交接
 
