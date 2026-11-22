@@ -47,6 +47,7 @@ dependencies = [
     "matplotlib",
     "matplotlib-inline",
     "openpyxl>=3.1.2,<3.2",
+    "onnxruntime",
     "opentelemetry-exporter-otlp-proto-grpc>=1.25.0", # https://github.com/chroma-core/chroma/issues/2571
     "pandas>=2.2.2,<2.3",
     "plotly<6.0.0",
@@ -54,8 +55,10 @@ dependencies = [
     "pypdf>=4.2.0,<4.3",
     "pylance",
     "python-decouple", # for theflow
-    "python-docx>=1.1.0,<1.2",
+    "python-docx>=1.1.2,<1.2",
     "python-dotenv>=1.0.1,<1.1",
+    "python-pptx>=1.0.2,<2",
+    "rapidocr>=3.10,<4",
     "tenacity>=8.2.3,<8.3",
     "theflow>=0.8.6,<0.9.0",
     "trogon>=0.5.0,<0.6",

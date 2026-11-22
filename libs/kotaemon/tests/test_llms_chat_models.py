@@ -4,7 +4,7 @@ from unittest.mock import patch
 import pytest
 
 from kotaemon.base.schema import AIMessage, HumanMessage, LLMInterface, SystemMessage
-from kotaemon.llms import AzureChatOpenAI, LlamaCppChat
+from kotaemon.llms import AzureChatOpenAI, ChatOpenAI, LlamaCppChat
 
 try:
     pass
@@ -14,6 +14,21 @@ except ImportError:
 from openai.types.chat.chat_completion import ChatCompletion
 
 from .conftest import skip_llama_cpp_not_installed
+
+
+def test_deepseek_forced_tool_call_disables_thinking():
+    model = ChatOpenAI(
+        model="deepseek-flash",
+        base_url="https://api.deepseek.com",
+        api_key="some-key",
+        extra_body={"thinking": {"type": "enabled"}},
+    )
+
+    assert model.prepare_params()["extra_body"] == {"thinking": {"type": "enabled"}}
+    params = model.prepare_params(tool_choice="required")
+    assert params["tool_choice"] == "required"
+    assert params["extra_body"] == {"thinking": {"type": "disabled"}}
+
 
 _openai_chat_completion_response = ChatCompletion.parse_obj(
     {

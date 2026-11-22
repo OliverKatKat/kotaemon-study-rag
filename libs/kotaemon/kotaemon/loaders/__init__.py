@@ -10,6 +10,7 @@ from .mathpix_loader import MathpixPDFReader
 from .ocr_loader import ImageReader, OCRReader
 from .paddleocr_loader import PaddleOCRVLReader, PPStructureV3Reader
 from .pdf_loader import PDFThumbnailReader
+from .pptx_loader import PptxReader
 from .txt_loader import TxtReader
 from .unstructured_loader import UnstructuredReader
 from .web_loader import WebReader
@@ -28,6 +29,7 @@ __all__ = [
     "DirectoryReader",
     "UnstructuredReader",
     "DocxReader",
+    "PptxReader",
     "HtmlReader",
     "MhtmlReader",
     "AdobeReader",

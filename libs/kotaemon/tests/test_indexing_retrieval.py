@@ -3,6 +3,7 @@ from pathlib import Path
 from typing import cast
 from unittest.mock import patch
 
+import pytest
 from openai.types.create_embedding_response import CreateEmbeddingResponse
 
 from kotaemon.base import Document
@@ -18,7 +19,7 @@ with open(Path(__file__).parent / "resources" / "embedding_openai.json") as f:
     "openai.resources.embeddings.Embeddings.create",
     side_effect=lambda *args, **kwargs: openai_embedding,
 )
-def test_indexing(tmp_path):
+def test_indexing(_embedding_call, tmp_path):
     db = ChromaVectorStore(path=str(tmp_path))
     doc_store = InMemoryDocumentStore()
     embedding = AzureOpenAIEmbeddings(
@@ -42,7 +43,7 @@ def test_indexing(tmp_path):
     "openai.resources.embeddings.Embeddings.create",
     side_effect=lambda *args, **kwargs: openai_embedding,
 )
-def test_retrieving(tmp_path):
+def test_retrieving(_embedding_call, tmp_path):
     db = ChromaVectorStore(path=str(tmp_path))
     doc_store = InMemoryDocumentStore()
     embedding = AzureOpenAIEmbeddings(
@@ -65,3 +66,24 @@ def test_retrieving(tmp_path):
 
     assert len(output) == 1, "Expect 1 results"
     assert output == output1, "Expect identical results"
+
+
+@patch("openai.resources.embeddings.Embeddings.create", return_value=openai_embedding)
+def test_hybrid_reports_failed_vector_search(_embedding_call, tmp_path):
+    pipeline = VectorRetrieval(
+        vector_store=ChromaVectorStore(path=str(tmp_path)),
+        doc_store=InMemoryDocumentStore(),
+        embedding=AzureOpenAIEmbeddings(
+            azure_deployment="text-embedding-ada-002",
+            azure_endpoint="https://test.openai.azure.com/",
+            api_key="some-key",
+            api_version="version",
+        ),
+        retrieval_mode="hybrid",
+    )
+
+    with patch.object(
+        ChromaVectorStore, "query", side_effect=RuntimeError("search failed")
+    ):
+        with pytest.raises(RuntimeError, match="search failed"):
+            pipeline(text="Hello world")

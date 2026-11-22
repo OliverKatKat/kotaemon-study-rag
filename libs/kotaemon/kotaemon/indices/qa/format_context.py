@@ -51,7 +51,10 @@ class PrepareEvidencePipeline(BaseComponent):
             page = retrieved_item.metadata.get("page_label", None)
             source = filename = retrieved_item.metadata.get("file_name", "-")
             if page:
-                source += f" (Page {page})"
+                label = "Slide" if filename.lower().endswith(".pptx") else "Page"
+                source += f" ({label} {page})"
+            if section := retrieved_item.metadata.get("section"):
+                source += f" · {html.escape(str(section))}"
             if retrieved_item.metadata.get("type", "") == "table":
                 evidence_modes.append(EVIDENCE_MODE_TABLE)
                 if table_found < 5:

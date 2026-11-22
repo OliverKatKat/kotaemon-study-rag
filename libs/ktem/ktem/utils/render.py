@@ -1,3 +1,4 @@
+import html
 import os
 
 import markdown
@@ -29,9 +30,13 @@ def get_header(doc: RetrievedDocument) -> str:
     """Get the header for the document"""
     header = ""
     if "page_label" in doc.metadata:
-        header += f" [Page {doc.metadata['page_label']}]"
+        file_name = doc.metadata.get("file_name", "")
+        label = "Slide" if file_name.lower().endswith(".pptx") else "Page"
+        header += f" [{label} {doc.metadata['page_label']}]"
 
     header += f" {doc.metadata.get('file_name', '<evidence>')}"
+    if section := doc.metadata.get("section"):
+        header += f" · {html.escape(str(section))}"
     return header.strip()
 
 
@@ -172,16 +177,8 @@ class Render:
             vectorstore_score = str(round(doc.score, 2))
             text_search_str = "<br>"
 
-        llm_reranking_score = (
-            round(doc.metadata["llm_trulens_score"], 2)
-            if doc.metadata.get("llm_trulens_score") is not None
-            else 0.0
-        )
-        reranking_score = (
-            round(doc.metadata["reranking_score"], 2)
-            if doc.metadata.get("reranking_score") is not None
-            else 0.0
-        )
+        llm_score = doc.metadata.get("llm_trulens_score")
+        reranking_score = doc.metadata.get("reranking_score")
         item_type_prefix = doc.metadata.get("type", "")
         item_type_prefix = item_type_prefix.capitalize()
         if item_type_prefix:
@@ -190,22 +187,24 @@ class Render:
         if "raw" in item_type_prefix:
             item_type_prefix = ""
 
-        if llm_reranking_score > 0:
-            relevant_score = llm_reranking_score
-        elif reranking_score > 0:
+        relevant_score = llm_score
+        if not relevant_score and reranking_score is not None:
             relevant_score = reranking_score
-        else:
-            relevant_score = 0.0
+        summary = f"{relevant_score:.1f}" if relevant_score is not None else "N/A"
+        llm_display = f"{llm_score:.2f}" if llm_score is not None else "N/A"
+        reranking_display = (
+            f"{reranking_score:.2f}" if reranking_score is not None else "N/A"
+        )
 
         rendered_score = Render.collapsible(
-            header=f"<b>&emsp;Relevance score</b>: {relevant_score:.1f}",
+            header=f"<b>&emsp;Relevance score</b>: {summary}",
             content="<b>&emsp;&emsp;Vectorstore score:</b>"
             f" {vectorstore_score}"
             f"{text_search_str}"
             "<b>&emsp;&emsp;LLM relevant score:</b>"
-            f" {llm_reranking_score}<br>"
+            f" {llm_display}<br>"
             "<b>&emsp;&emsp;Reranking score:</b>"
-            f" {reranking_score}<br>",
+            f" {reranking_display}<br>",
         )
 
         text = doc.text if not override_text else override_text
@@ -221,7 +220,7 @@ class Render:
 
         rendered_header = Render.preview(
             f"<i>{item_type_prefix}{get_header(doc)}</i>"
-            f" [score: {llm_reranking_score}]",
+            f" [score: {llm_display}]",
             doc,
             highlight_text=highlight_text,
         )

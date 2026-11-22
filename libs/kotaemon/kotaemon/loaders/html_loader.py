@@ -46,11 +46,19 @@ class HtmlReader(BaseReader):
             list[Document]: list of documents extracted from the HTML file
         """
         import html2text
+        from bs4 import BeautifulSoup, UnicodeDammit
 
         file_path = Path(file_path).resolve()
 
-        with file_path.open("r") as f:
-            html_text = "".join([line[:-1] for line in f.readlines()])
+        html_text = UnicodeDammit(file_path.read_bytes(), is_html=True).unicode_markup
+        if html_text is None:
+            raise ValueError(f"Cannot decode HTML file {file_path.name}.")
+
+        if not self._page_break_pattern:
+            soup = BeautifulSoup(html_text, "html.parser")
+            main_regions = soup.select("main, [role=main]")
+            if len(main_regions) == 1 and main_regions[0].get_text(strip=True):
+                html_text = str(main_regions[0])
 
         # read HTML
         all_text = html2text.html2text(html_text)

@@ -152,8 +152,8 @@ class DocumentRetrievalPipeline(BaseFileIndexRetriever):
             results = session.execute(stmt)
             chunk_ids = [r[0].target_id for r in results.all()]
 
-        # do first round top_k extension
-        retrieval_kwargs["do_extend"] = True
+        # Retrieve extra candidates only when a reranker can use them.
+        retrieval_kwargs["do_extend"] = bool(self.rerankers)
         retrieval_kwargs["scope"] = chunk_ids
         retrieval_kwargs["filters"] = MetadataFilters(
             filters=[
@@ -382,14 +382,15 @@ class IndexPipeline(BaseComponent):
             if page_label and page_label in page_label_to_thumbnail:
                 chunk.metadata["thumbnail_doc_id"] = page_label_to_thumbnail[page_label]
 
-        to_index_chunks = all_chunks + non_text_docs + thumbnail_docs
+        vector_chunks = all_chunks + non_text_docs
+        document_chunks = vector_chunks + thumbnail_docs
 
         # add to doc store
         chunks = []
         n_chunks = 0
         chunk_size = self.chunk_batch_size * 4
-        for start_idx in range(0, len(to_index_chunks), chunk_size):
-            chunks = to_index_chunks[start_idx : start_idx + chunk_size]
+        for start_idx in range(0, len(document_chunks), chunk_size):
+            chunks = document_chunks[start_idx : start_idx + chunk_size]
             self.handle_chunks_docstore(chunks, file_id)
             n_chunks += len(chunks)
             yield Document(
@@ -401,8 +402,8 @@ class IndexPipeline(BaseComponent):
             chunks = []
             n_chunks = 0
             chunk_size = self.chunk_batch_size
-            for start_idx in range(0, len(to_index_chunks), chunk_size):
-                chunks = to_index_chunks[start_idx : start_idx + chunk_size]
+            for start_idx in range(0, len(vector_chunks), chunk_size):
+                chunks = vector_chunks[start_idx : start_idx + chunk_size]
                 self.handle_chunks_vectorstore(chunks, file_id)
                 n_chunks += len(chunks)
                 if self.VS:

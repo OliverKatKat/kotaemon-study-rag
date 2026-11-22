@@ -14,6 +14,7 @@ from kotaemon.loaders import (
     AzureAIDocumentIntelligenceLoader,
     DirectoryReader,
     DoclingReader,
+    DocxReader,
     HtmlReader,
     MathpixPDFReader,
     MhtmlReader,
@@ -22,6 +23,7 @@ from kotaemon.loaders import (
     PandasExcelReader,
     PDFThumbnailReader,
     PPStructureV3Reader,
+    PptxReader,
     TxtReader,
     UnstructuredReader,
     WebReader,
@@ -47,8 +49,8 @@ paddle_vl_reader = PaddleOCRVLReader(device=paddle_device)
 
 KH_DEFAULT_FILE_EXTRACTORS: dict[str, BaseReader] = {
     ".xlsx": PandasExcelReader(),
-    ".docx": unstructured,
-    ".pptx": unstructured,
+    ".docx": DocxReader(),
+    ".pptx": PptxReader(),
     ".xls": unstructured,
     ".doc": unstructured,
     ".html": HtmlReader(),

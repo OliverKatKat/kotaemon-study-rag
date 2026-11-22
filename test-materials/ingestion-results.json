@@ -1,0 +1,311 @@
+{
+  "scope": "Isolated ingestion only. No query, ranking or answer generation.",
+  "embedding": {
+    "model": "text-embedding-v4",
+    "dimensions": 2048
+  },
+  "files": [
+    {
+      "filename": "11-hash2.pdf",
+      "source_id": "1bca5a0f-cd70-4331-b280-c8aa5a73a38d",
+      "document_records": 74,
+      "vector_records": 37,
+      "batch_sizes": [
+        10,
+        10,
+        10,
+        7
+      ],
+      "chunks": {
+        "text": [
+          37,
+          2,
+          192
+        ],
+        "thumbnail": [
+          37,
+          2,
+          2
+        ]
+      },
+      "ocr_calls": 22
+    },
+    {
+      "filename": "UTS-accessible-word.docx",
+      "source_id": "2e1b4381-fd80-4a4c-bd61-4f9e2cc11a38",
+      "document_records": 14,
+      "vector_records": 14,
+      "batch_sizes": [
+        10,
+        4
+      ],
+      "chunks": {
+        "text": [
+          14,
+          3,
+          157
+        ]
+      },
+      "ocr_calls": 2
+    },
+    {
+      "filename": "USST-syllabus.docx",
+      "source_id": "1874628a-825c-4b6d-bed1-ee92c17bb62a",
+      "document_records": 15,
+      "vector_records": 15,
+      "batch_sizes": [
+        10,
+        5
+      ],
+      "chunks": {
+        "text": [
+          8,
+          7,
+          212
+        ],
+        "table": [
+          7,
+          57,
+          730
+        ]
+      },
+      "ocr_calls": 1
+    },
+    {
+      "filename": "ZJU-ReviewFinal.docx",
+      "source_id": "055ed077-f611-455d-9c0d-9cc5276b43d3",
+      "document_records": 5,
+      "vector_records": 5,
+      "batch_sizes": [
+        5
+      ],
+      "chunks": {
+        "text": [
+          5,
+          578,
+          874
+        ]
+      },
+      "ocr_calls": 10
+    },
+    {
+      "filename": "USTC-ClassIn.pdf",
+      "source_id": "b9a1c881-27bc-4b66-8644-1cc4e74a89e1",
+      "document_records": 33,
+      "vector_records": 17,
+      "batch_sizes": [
+        10,
+        7
+      ],
+      "chunks": {
+        "text": [
+          17,
+          46,
+          889
+        ],
+        "thumbnail": [
+          16,
+          2,
+          2
+        ]
+      },
+      "ocr_calls": 60
+    },
+    {
+      "filename": "11-hash2.pptx",
+      "source_id": "ed6d6c12-ee60-4e02-8724-2542870f7bbf",
+      "document_records": 37,
+      "vector_records": 37,
+      "batch_sizes": [
+        10,
+        10,
+        10,
+        7
+      ],
+      "chunks": {
+        "text": [
+          37,
+          2,
+          156
+        ]
+      },
+      "ocr_calls": 3
+    },
+    {
+      "filename": "UTS-accessible-powerpoint.pptx",
+      "source_id": "14806f81-989e-4052-af09-de08bafaf0d6",
+      "document_records": 25,
+      "vector_records": 25,
+      "batch_sizes": [
+        10,
+        10,
+        5
+      ],
+      "chunks": {
+        "text": [
+          25,
+          2,
+          849
+        ]
+      },
+      "ocr_calls": 13
+    },
+    {
+      "filename": "MIT-handwritten-8.pdf",
+      "source_id": "42cb6cf8-e0c1-454c-9b0c-518cb7d37141",
+      "document_records": 16,
+      "vector_records": 8,
+      "batch_sizes": [
+        8
+      ],
+      "chunks": {
+        "text": [
+          8,
+          46,
+          248
+        ],
+        "thumbnail": [
+          8,
+          2,
+          2
+        ]
+      },
+      "ocr_calls": 7
+    },
+    {
+      "filename": "CMU-scanned-lecture.pdf",
+      "source_id": "bafc49fc-8d1b-42d7-a7b9-d006e37466b9",
+      "document_records": 28,
+      "vector_records": 14,
+      "batch_sizes": [
+        10,
+        4
+      ],
+      "chunks": {
+        "text": [
+          14,
+          32,
+          135
+        ],
+        "thumbnail": [
+          14,
+          2,
+          2
+        ]
+      },
+      "ocr_calls": 14
+    },
+    {
+      "filename": "python-operator.html",
+      "source_id": "20f136b8-7d6a-4b19-b577-b9049ed000b1",
+      "document_records": 8,
+      "vector_records": 8,
+      "batch_sizes": [
+        8
+      ],
+      "chunks": {
+        "text": [
+          8,
+          482,
+          883
+        ]
+      },
+      "ocr_calls": 0
+    },
+    {
+      "filename": "python-data-structures.html",
+      "source_id": "3ecb8627-d7e0-41a2-994d-f91b42722311",
+      "document_records": 15,
+      "vector_records": 15,
+      "batch_sizes": [
+        10,
+        5
+      ],
+      "chunks": {
+        "text": [
+          15,
+          215,
+          882
+        ]
+      },
+      "ocr_calls": 0
+    }
+  ],
+  "uw_pdf_reindex": {
+    "before_id": "146458b8-9ceb-40cb-8054-12a8e370097c",
+    "after_id": "1bca5a0f-cd70-4331-b280-c8aa5a73a38d",
+    "before_vectors": 74,
+    "after_vectors": 37,
+    "after_thumbnail_vectors": 0,
+    "after_linked_previews": 37,
+    "old_source_relationships_documents_and_vectors": 0
+  },
+  "verified_anchors": [
+    {
+      "chunk_id": "8c583e1f-c4b1-4ab6-9e36-2928dd764757",
+      "page_or_slide": null,
+      "section": "Headings",
+      "text_verified": "No Spacing"
+    },
+    {
+      "chunk_id": "64f45ce1-650f-4258-82e9-ac358a89a497",
+      "page_or_slide": 25,
+      "section": null,
+      "text_verified": "| 49 |  | 58 | 79 |  |  |  |  | 18 | 89 |"
+    },
+    {
+      "chunk_id": "a6e47a88-27ac-43f8-b3b9-821de013d807",
+      "page_or_slide": 26,
+      "section": null,
+      "text_verified": "Claim: If λ<(1)/(2), and TableSize is prime"
+    },
+    {
+      "chunk_id": "b0822d91-9c81-4669-bc76-bf1e35b662de",
+      "page_or_slide": 27,
+      "section": null,
+      "text_verified": "i^(2)"
+    },
+    {
+      "chunk_id": "1e89e761-8a97-44a9-a794-90b91dbf065c",
+      "page_or_slide": 8,
+      "section": null,
+      "text_verified": "试卷资源"
+    },
+    {
+      "chunk_id": "cf3ecaa2-af13-42f2-9734-a8a05630bf96",
+      "page_or_slide": 4,
+      "section": "Use the Microsoft accessibility checker (mindfully): Windows and Web",
+      "text_verified": "Smart Lookup"
+    },
+    {
+      "chunk_id": "fdac7540-ac6d-4e24-acee-6d54bc9037fb",
+      "page_or_slide": 17,
+      "section": "Don’t use tables for formatting",
+      "text_verified": "Banded Columns"
+    },
+    {
+      "chunk_id": "34279afb-008b-44ad-9e6b-4b73b95147c0",
+      "page_or_slide": 26,
+      "section": "Quadratic Probing: Proof",
+      "text_verified": "λ<(1)/(2)"
+    }
+  ],
+  "uw_pdf_page_28": {
+    "chunk_ids": [
+      "8cc5fae6-57fe-43b4-b051-e3fc51498549"
+    ],
+    "restored_paired_factors": {
+      "(i^(2)−j^(2))modTableSize=0": true,
+      "(i+j)(i−j)modTableSize=0": true,
+      "ThusTableSizedivides(i+j)(i−j)": true
+    }
+  },
+  "preservation": {
+    "uts_word_native_paragraphs_in_order": 50,
+    "usst_word_tables": 7,
+    "usst_covered_merge_positions": 148,
+    "operator_table_rows": 38,
+    "classin_page_8_text_length_before": 760,
+    "classin_page_8_text_length_after": 698
+  }
+}

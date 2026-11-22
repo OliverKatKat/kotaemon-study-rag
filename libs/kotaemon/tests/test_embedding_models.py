@@ -111,6 +111,35 @@ def test_openai_embeddings_batch_raw(openai_embedding_call):
     openai_embedding_call.assert_called()
 
 
+@patch("openai.resources.embeddings.Embeddings.create")
+def test_bailian_embeddings_batch_order(embedding_call):
+    def embed(*, input, **kwargs):
+        return Mock(
+            data=[
+                Mock(index=index, embedding=[float(text)])
+                for index, text in reversed(list(enumerate(input)))
+            ]
+        )
+
+    embedding_call.side_effect = embed
+    model = OpenAIEmbeddings(
+        api_key="some-key",
+        model="text-embedding-v4",
+        dimensions=2048,
+    )
+    output = model([str(index) for index in range(21)])
+
+    assert [len(call.kwargs["input"]) for call in embedding_call.call_args_list] == [
+        10,
+        10,
+        1,
+    ]
+    assert all(
+        call.kwargs["dimensions"] == 2048 for call in embedding_call.call_args_list
+    )
+    assert [doc.embedding for doc in output] == [[float(i)] for i in range(21)]
+
+
 @skip_when_sentence_bert_not_installed
 @patch(
     "sentence_transformers.SentenceTransformer",

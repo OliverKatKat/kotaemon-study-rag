@@ -84,6 +84,9 @@ class BaseOpenAIEmbeddings(BaseEmbeddings):
         """Get the openai response"""
         raise NotImplementedError
 
+    def request_batches(self, inputs: list) -> list[list]:
+        return [inputs]
+
     def invoke(
         self, text: str | list[str] | Document | list[Document], *args, **kwargs
     ) -> list[DocumentWithEmbedding]:
@@ -101,15 +104,17 @@ class BaseOpenAIEmbeddings(BaseEmbeddings):
                 splitted_indices[idx] = (len(input_), len(input_) + 1)
                 input_.append(text.text)
 
-        resp = self.openai_response(client, input=input_, **kwargs).dict()
-        output_ = list(sorted(resp["data"], key=lambda x: x["index"]))
+        output_ = []
+        for batch in self.request_batches(input_):
+            response = self.openai_response(client, input=batch, **kwargs)
+            output_.extend(sorted(response.data, key=lambda item: item.index))
 
         output = []
         for idx, doc in enumerate(input_doc):
             embs = output_[splitted_indices[idx][0] : splitted_indices[idx][1]]
             if len(embs) == 1:
                 output.append(
-                    DocumentWithEmbedding(embedding=embs[0]["embedding"], content=doc)
+                    DocumentWithEmbedding(embedding=embs[0].embedding, content=doc)
                 )
                 continue
 
@@ -117,7 +122,7 @@ class BaseOpenAIEmbeddings(BaseEmbeddings):
                 len(_)
                 for _ in input_[splitted_indices[idx][0] : splitted_indices[idx][1]]
             ]
-            vs: list[list[float]] = [_["embedding"] for _ in embs]
+            vs = [item.embedding for item in embs]
             emb = np.average(vs, axis=0, weights=chunk_lens)
             emb = emb / np.linalg.norm(emb)
             output.append(DocumentWithEmbedding(embedding=emb.tolist(), content=doc))
@@ -129,12 +134,12 @@ class BaseOpenAIEmbeddings(BaseEmbeddings):
     ) -> list[DocumentWithEmbedding]:
         input_ = self.prepare_input(text)
         client = self.prepare_client(async_version=True)
-        resp = await self.openai_response(
-            client, input=[_.text if _.text else " " for _ in input_], **kwargs
-        ).dict()
-        output_ = sorted(resp["data"], key=lambda x: x["index"])
+        output_ = []
+        for batch in self.request_batches([doc.text or " " for doc in input_]):
+            response = await self.openai_response(client, input=batch, **kwargs)
+            output_.extend(sorted(response.data, key=lambda item: item.index))
         return [
-            DocumentWithEmbedding(embedding=o["embedding"], content=i)
+            DocumentWithEmbedding(embedding=o.embedding, content=i)
             for i, o in zip(input_, output_)
         ]
 
@@ -152,6 +157,11 @@ class OpenAIEmbeddings(BaseOpenAIEmbeddings):
         ),
         required=True,
     )
+
+    def request_batches(self, inputs: list) -> list[list]:
+        if self.model == "text-embedding-v4":
+            return [inputs[start : start + 10] for start in range(0, len(inputs), 10)]
+        return super().request_batches(inputs)
 
     def prepare_client(self, async_version: bool = False):
         """Get the OpenAI client
@@ -189,6 +199,8 @@ class OpenAIEmbeddings(BaseOpenAIEmbeddings):
         }
         if self.dimensions:
             params["dimensions"] = self.dimensions
+        if self.model == "text-embedding-v4":
+            params["encoding_format"] = "float"
         params.update(kwargs)
 
         return client.embeddings.create(**params)

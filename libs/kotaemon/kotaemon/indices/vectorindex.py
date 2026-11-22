@@ -1,7 +1,7 @@
 from __future__ import annotations
 
-import threading
 import uuid
+from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 from typing import Optional, Sequence, cast
 
@@ -215,14 +215,11 @@ class VectorRetrieval(BaseRetrieval):
                         query, top_k=top_k_first_round, doc_ids=scope
                     )
 
-            vs_query_thread = threading.Thread(target=query_vectorstore)
-            ds_query_thread = threading.Thread(target=query_docstore)
-
-            vs_query_thread.start()
-            ds_query_thread.start()
-
-            vs_query_thread.join()
-            ds_query_thread.join()
+            with ThreadPoolExecutor(max_workers=2) as executor:
+                vector_result = executor.submit(query_vectorstore)
+                text_result = executor.submit(query_docstore)
+                vector_result.result()
+                text_result.result()
 
             result = [
                 RetrievedDocument(**doc.to_dict(), score=-1.0)

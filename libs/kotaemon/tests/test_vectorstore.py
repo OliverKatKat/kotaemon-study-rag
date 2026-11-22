@@ -2,6 +2,11 @@ import json
 import os
 
 import pytest
+from llama_index.core.vector_stores.types import (
+    FilterOperator,
+    MetadataFilter,
+    MetadataFilters,
+)
 
 from kotaemon.base import DocumentWithEmbedding
 from kotaemon.storages import (
@@ -70,6 +75,35 @@ class TestChromaVectorStore:
 
         _, _, out_ids = db.query(embedding=[0.42, 0.52, 0.53], top_k=1)
         assert out_ids == ["b"]
+
+    def test_query_falls_back_when_filtered_hnsw_search_fails(
+        self, tmp_path, monkeypatch
+    ):
+        db = ChromaVectorStore(path=str(tmp_path))
+        db.add(
+            embeddings=[[1.0, 0.0], [1.0, 1.0], [2.0, 0.0]],
+            metadatas=[{"file_id": name} for name in ("other", "slides", "slides")],
+            ids=["other", "nearest", "second"],
+        )
+
+        def broken_query(**kwargs):
+            raise RuntimeError("Cannot return the results in a contigious 2D array")
+
+        monkeypatch.setattr(db._collection, "query", broken_query)
+        _, scores, ids = db.query(
+            embedding=[1.0, 0.2],
+            top_k=30,
+            filters=MetadataFilters(
+                filters=[
+                    MetadataFilter(
+                        key="file_id", value=["slides"], operator=FilterOperator.IN
+                    )
+                ]
+            ),
+        )
+
+        assert ids == ["nearest", "second"]
+        assert scores == pytest.approx([0.5272924, 0.3534547])
 
     def test_save_load_delete(self, tmp_path):
         """Test that save/load func behave correctly."""

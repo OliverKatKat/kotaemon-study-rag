@@ -1,4 +1,5 @@
 from typing import TYPE_CHECKING, AsyncGenerator, Iterator, Optional, Type
+from urllib.parse import urlsplit
 
 from pydantic import BaseModel
 from theflow.utils.modules import import_dotted_string
@@ -281,6 +282,7 @@ class ChatOpenAI(BaseChatOpenAI):
     base_url: Optional[str] = Param(None, help="OpenAI base URL")
     organization: Optional[str] = Param(None, help="OpenAI organization")
     model: str = Param(help="OpenAI model", required=True)
+    extra_body: Optional[dict] = Param(None, help="Extra request body parameters")
 
     def prepare_client(self, async_version: bool = False):
         """Get the OpenAI client
@@ -325,6 +327,16 @@ class ChatOpenAI(BaseChatOpenAI):
         }
         params = {k: v for k, v in params_.items() if v is not None}
         params.update(kwargs)
+
+        extra_body = {**(self.extra_body or {}), **(params.get("extra_body") or {})}
+        tool_choice = params.get("tool_choice")
+        if (tool_choice == "required" or isinstance(tool_choice, dict)) and urlsplit(
+            self.base_url or ""
+        ).hostname == "api.deepseek.com":
+            # DeepSeek accepts forced tool calls only in non-thinking mode.
+            extra_body["thinking"] = {"type": "disabled"}
+        if extra_body:
+            params["extra_body"] = extra_body
 
         return params
 
