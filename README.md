@@ -39,10 +39,6 @@ uv sync --locked --package kotaemon --package ktem
 uv run --no-sync python app.py
 ```
 
-[自制测试文件 ZIP](test-materials/synthetic-samples.zip) 可直接下载。六份真实样本由原站下载，运行 `python test-materials/download_samples.py` 后，在 `downloads/real-samples/` 获得原稿，在 `downloads/real-samples.zip` 获得打包文件。
-
-[复测明细](test-materials/ingestion-results.json) · [六份资料的测试问题与预期答案](test-materials/search-cases.md)
-
 ## 检索与问答交接
 
 - **独立 Reranker 待接入并验收**。当前复测配置的 Cohere 重排未启用。可评估百炼 `qwen3-rerank`，并核对信息面板是否能区分缺失评分与有效零分。
